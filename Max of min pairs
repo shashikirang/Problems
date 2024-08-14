@@ -1,0 +1,98 @@
+The "Max of Min Pairs" problem is a classic problem often seen in competitive programming. The problem statement typically goes as follows:
+
+Problem Statement:
+
+Given an array of integers, find the maximum value of the minimum value of all possible pairs formed from the array elements. Each pair consists of two elements, and you need to consider all possible pairs.#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+// Function to find the maximum of the minimum values of all possible pairs
+int maxOfMinPairs(vector<int>& nums) {
+    // Sort the array
+    sort(nums.begin(), nums.end());
+
+    int maxMinValue = 0;
+
+    // Iterate through the array and consider adjacent pairs
+    for (size_t i = 0; i < nums.size() - 1; ++i) {
+        // The minimum of the current pair (i, i+1) is nums[i]
+        maxMinValue = max(maxMinValue, nums[i]);
+    }
+
+    return maxMinValue;
+}
+
+int main() {
+    // Example input
+    vector<int> nums = {1, 3, 6, 7, 9, 4};
+
+    // Find the maximum of minimum pairs
+    int result = maxOfMinPairs(nums);
+
+    // Print the result
+    cout << "The maximum of the minimum values of all possible pairs is: " << result << endl;
+
+    return 0;
+}
+
+
+Time Complexity: 
+O(nlogn) for sorting, where 
+n is the number of elements in the array. The iteration through the array takes 
+O(n) time.
+Space Complexity: 
+O(1) if the sorting is done in-place, or 
+O(n) if additional space is required for sorting.
+
+Sample Input and Output
+Example 1
+Input:
+
+vector<int> nums = {1, 3, 6, 7, 9, 4};
+Output:
+
+The maximum of the minimum values of all possible pairs is: 6
+Explanation:
+
+Sorting the Array: [1, 3, 4, 6, 7, 9]
+
+Finding Pairs:
+
+Pairs: (1, 3), (3, 4), (4, 6), (6, 7), (7, 9)
+Minimum values of these pairs: 1, 3, 4, 6, 7
+Maximum of these minimum values: 6
+Example 2
+Input:
+
+vector<int> nums = {10, 2, 5, 8, 7};
+Output:
+
+The maximum of the minimum values of all possible pairs is: 8
+Explanation:
+
+Sorting the Array: [2, 5, 7, 8, 10]
+
+Finding Pairs:
+
+Pairs: (2, 5), (5, 7), (7, 8), (8, 10)
+Minimum values of these pairs: 2, 5, 7, 8
+Maximum of these minimum values: 8
+Example 3
+Input:
+
+
+vector<int> nums = {3, 1, 4, 1, 5};
+Output:
+
+The maximum of the minimum values of all possible pairs is: 4
+Explanation:
+
+Sorting the Array: [1, 1, 3, 4, 5]
+
+Finding Pairs:
+
+Pairs: (1, 1), (1, 3), (3, 4), (4, 5)
+Minimum values of these pairs: 1, 1, 3, 4
+Maximum of these minimum values: 4

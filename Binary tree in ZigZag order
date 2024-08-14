@@ -1,0 +1,91 @@
+To print the elements of a binary tree in zigzag order (also known as spiral order) in C++, you can use a double-ended queue (deque) to facilitate level-by-level traversal with alternating order for each level.
+Here's a step-by-step approach with a complete C++ implementation:
+
+Approach
+-Use a deque: This will help you efficiently add and remove nodes from both ends.
+-Use a flag: This flag will help alternate the direction of printing (left-to-right or right-to-left) at each level.
+-Level Order Traversal: Traverse the tree level by level, adding nodes to the deque and printing them according to the current direction.
+
+#include <iostream>
+#include <deque>
+#include <vector>
+
+using namespace std;
+
+// Definition for a binary tree node.
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+};
+
+// Function to print the tree in zigzag order
+void printZigzag(TreeNode* root) {
+    if (!root) return;
+    
+    deque<TreeNode*> dq;
+    dq.push_back(root);
+    bool leftToRight = true;
+    
+    while (!dq.empty()) {
+        int levelSize = dq.size();
+        vector<int> levelNodes;
+        
+        for (int i = 0; i < levelSize; ++i) {
+            TreeNode* node;
+            if (leftToRight) {
+                node = dq.front();
+                dq.pop_front();
+                if (node->left) dq.push_back(node->left);
+                if (node->right) dq.push_back(node->right);
+            } else {
+                node = dq.back();
+                dq.pop_back();
+                if (node->right) dq.push_front(node->right);
+                if (node->left) dq.push_front(node->left);
+            }
+            levelNodes.push_back(node->val);
+        }
+        
+        for (int value : levelNodes) {
+            cout << value << " ";
+        }
+        cout << endl;
+        
+        leftToRight = !leftToRight;
+    }
+}
+
+int main() {
+    // Create a sample binary tree:
+    //        1
+    //       / \
+    //      2   3
+    //     / \ / \
+    //    4  5 6  7
+    
+    TreeNode* root = new TreeNode(1);
+    root->left = new TreeNode(2);
+    root->right = new TreeNode(3);
+    root->left->left = new TreeNode(4);
+    root->left->right = new TreeNode(5);
+    root->right->left = new TreeNode(6);
+    root->right->right = new TreeNode(7);
+    
+    printZigzag(root);
+    
+    // Clean up memory (not shown here but should be done in real applications)
+    
+    return 0;
+}
+Output:
+1 
+3 2 
+4 5 6 7 
+
+
+Time Complexity: 
+O(N) is the number of nodes in the binary tree.
+Space Complexity: 
+O(N) – due to the space required for the deque and the vector used for storing nodes at each level.

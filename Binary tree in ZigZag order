@@ -76,7 +76,20 @@ int main() {
     printZigzag(root);
     
     // Clean up memory (not shown here but should be done in real applications)
+    // Function to delete all nodes in the binary tree
+    /*void deleteTree(TreeNode* root) {
+    if (!root) return;
     
+    // Post-order traversal to delete child nodes first
+    deleteTree(root->left);
+    deleteTree(root->right);
+    
+    // Delete the current node
+    delete root;
+    }
+    */
+
+
     return 0;
 }
 Output:

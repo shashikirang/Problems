@@ -1,0 +1,122 @@
+#include <iostream>
+#include <unordered_map>
+using namespace std;
+
+// TrieNode represents a single node in the Trie
+class TrieNode {
+public:
+    unordered_map<char, TrieNode*> children;
+    bool isEndOfWord;
+
+    TrieNode() : isEndOfWord(false) {}
+};
+
+// Trie represents the Trie data structure
+class Trie {
+private:
+    TrieNode* root;
+
+public:
+    // Constructor
+    Trie() {
+        root = new TrieNode();
+    }
+
+    // Destructor to clean up memory
+    ~Trie() {
+        deleteTrie(root);
+    }
+
+    // Helper function to delete the Trie nodes
+    void deleteTrie(TrieNode* node) {
+        for (auto& pair : node->children) {
+            deleteTrie(pair.second);
+        }
+        delete node;
+    }
+
+    // Insert a word into the Trie
+    void insert(const string& word) {
+        TrieNode* node = root;
+        for (char ch : word) {
+            if (node->children.find(ch) == node->children.end()) {
+                node->children[ch] = new TrieNode();
+            }
+            node = node->children[ch];
+        }
+        node->isEndOfWord = true;
+    }
+
+    // Search for a word in the Trie
+    bool search(const string& word) {
+        TrieNode* node = root;
+        for (char ch : word) {
+            if (node->children.find(ch) == node->children.end()) {
+                return false;
+            }
+            node = node->children[ch];
+        }
+        return node->isEndOfWord;
+    }
+
+    // Check if there is any word in the Trie that starts with the given prefix
+    bool startsWith(const string& prefix) {
+        TrieNode* node = root;
+        for (char ch : prefix) {
+            if (node->children.find(ch) == node->children.end()) {
+                return false;
+            }
+            node = node->children[ch];
+        }
+        return true;
+    }
+};
+
+int main() {
+    Trie trie;
+
+    // Insert words into the Trie
+    trie.insert("apple");
+    trie.insert("app");
+    trie.insert("banana");
+
+    // Search for words
+    cout << "Search 'apple': " << (trie.search("apple") ? "Found" : "Not Found") << endl;
+    cout << "Search 'app': " << (trie.search("app") ? "Found" : "Not Found") << endl;
+    cout << "Search 'ban': " << (trie.search("ban") ? "Found" : "Not Found") << endl;
+
+    // Check prefixes
+    cout << "Starts with 'app': " << (trie.startsWith("app") ? "Yes" : "No") << endl;
+    cout << "Starts with 'ban': " << (trie.startsWith("ban") ? "Yes" : "No") << endl;
+    cout << "Starts with 'ba': " << (trie.startsWith("ba") ? "Yes" : "No") << endl;
+
+    return 0;
+}
+
+
+
+Complexity:
+Insert: 
+𝑂
+(
+𝑚
+)
+O(m), where 
+𝑚
+m is the length of the word being inserted.
+Search: 
+𝑂
+(
+𝑚
+)
+O(m), where 
+𝑚
+m is the length of the word being searched.
+StartsWith: 
+𝑂
+(
+𝑚
+)
+O(m), where 
+𝑚
+m is the length of the prefix.

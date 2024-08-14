@@ -1,0 +1,64 @@
+#include <iostream>
+#include <string>
+#include <cctype>  // For isalpha
+
+using namespace std;
+
+// Function to reverse only the alphabetical characters in a string
+string reverseOnlyAlphabets(const string& s) {
+    // Step 1: Extract alphabetical characters
+    string alphabets;
+    for (char ch : s) {
+        if (isalpha(ch)) {
+            alphabets += ch;
+        }
+    }
+
+    // Step 2: Reverse the extracted alphabetical characters
+    reverse(alphabets.begin(), alphabets.end());
+
+    // Step 3: Reconstruct the string with reversed alphabetical characters
+    string result;
+    auto it = alphabets.begin();
+    for (char ch : s) {
+        if (isalpha(ch)) {
+            result += *it++;
+        } else {
+            result += ch;
+        }
+    }
+
+    return result;
+}
+
+int main() {
+    // Example input
+    string input = "a-bC-dEf-ghIj";
+
+    // Reverse only the alphabetical characters
+    string output = reverseOnlyAlphabets(input);
+
+    // Print the result
+    cout << "Original string: " << input << endl;
+    cout << "Reversed string: " << output << endl;
+
+    return 0;
+}
+Time Complexity: 
+𝑂
+(
+𝑛
+)
+O(n), where 
+𝑛
+n is the length of the string. This is because we traverse the string a few times (for extraction, reversal, and reconstruction).
+Space Complexity: 
+𝑂
+(
+𝑛
+)
+O(n) for storing the alphabetical characters and the result string.
+
+
+Original string: a-bC-dEf-ghIj
+Reversed string: j-Ih-gE-fC-dA

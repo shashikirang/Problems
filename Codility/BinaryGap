@@ -1,0 +1,26 @@
+package main
+
+import "fmt"
+
+func main() {
+	N := 1041 // Binary: 10000010001
+
+	startCount := false
+	gap := 0
+	maxGap := 0
+
+	for N != 0 {
+		if N&1 == 1 {
+			if startCount && gap > maxGap {
+				maxGap = gap
+			}
+			startCount = true
+			gap = 0
+		} else if startCount {
+			gap++
+		}
+		N >>= 1
+	}
+
+	fmt.Println("Gap is", maxGap)
+}

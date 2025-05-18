@@ -1,0 +1,61 @@
+Write a function:
+
+func Solution(A int, B int, K int) int
+
+that, given three integers A, B and K, returns the number of integers within the range [A..B] that are divisible by K, i.e.:
+
+{ i : A ≤ i ≤ B, i mod K = 0 }
+
+For example, for A = 6, B = 11 and K = 2, your function should return 3, because there are three numbers divisible by 2 within the range [6..11], namely 6, 8 and 10.
+
+Write an efficient algorithm for the following assumptions:
+
+A and B are integers within the range [0..2,000,000,000];
+K is an integer within the range [1..2,000,000,000];
+A ≤ B.
+
+
+You need to compute:
+
+> **Count of numbers `i` such that**:
+> `A ≤ i ≤ B` **and** `i % K == 0`
+
+
+The count of numbers divisible by `K` up to `B` is:
+floor(B / K)
+
+The count of numbers divisible by `K` up to `A-1` is:
+
+floor((A - 1) / K)
+
+So the count in `[A..B]` is:
+
+floor(B / K) - floor((A - 1) / K)
+
+func Solution(A int, B int, K int) int {
+    // Handle zero manually if needed (optional)
+    if A == 0 {
+        return B/K + 1
+    }
+    return B/K - (A-1)/K
+}
+
+### 🔍 Example Dry Run
+
+For `A = 6, B = 11, K = 2`:
+
+* `B/K = 11/2 = 5`
+* `(A-1)/K = 5/2 = 2`
+* Result = `5 - 2 = 3`( 6, 8, 10)
+
+Test Cases
+fmt.Println(Solution(6, 11, 2))  // 3
+fmt.Println(Solution(0, 0, 11))  // 1
+fmt.Println(Solution(10, 10, 5)) // 1
+fmt.Println(Solution(10, 10, 7)) // 0
+fmt.Println(Solution(0, 2000000000, 1)) // 2_000_000_001
+
+
+This solution is **O(1)** and handles very large values of `A`, `B`, and `K` without overflow or loops.
+
+Let me know if you want an explanation on how this formula was derived!

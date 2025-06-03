@@ -1,0 +1,94 @@
+Solution: 
+Split and sort chunks:
+Read the file in chunks (e.g., 100MB at a time).
+Sort each chunk in memory.
+Write each sorted chunk to a temporary file.
+Merge the sorted chunks:
+Use a min-heap (priority queue) to perform a k-way merge of the sorted temporary files.
+Output final sorted numbers into the result file.
+
+//Split and sort
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+const size_t CHUNK_SIZE = 1000000; // 1 million numbers per chunk
+
+void splitAndSortChunks(const std::string& inputFile, std::vector<std::string>& chunkFiles) {
+    std::ifstream in(inputFile);
+    std::vector<int> buffer;
+    int num;
+    int chunkIndex = 0;
+
+    while (in >> num) {
+        buffer.push_back(num);
+        if (buffer.size() >= CHUNK_SIZE) {
+            std::sort(buffer.begin(), buffer.end());
+
+            std::string chunkFile = "chunk_" + std::to_string(chunkIndex++) + ".txt";
+            std::ofstream out(chunkFile);
+            for (int n : buffer) out << n << "\n";
+            chunkFiles.push_back(chunkFile);
+            buffer.clear();
+        }
+    }
+
+    // Handle last chunk
+    if (!buffer.empty()) {
+        std::sort(buffer.begin(), buffer.end());
+        std::string chunkFile = "chunk_" + std::to_string(chunkIndex++) + ".txt";
+        std::ofstream out(chunkFile);
+        for (int n : buffer) out << n << "\n";
+        chunkFiles.push_back(chunkFile);
+    }
+}
+
+
+//Merge Sorted chunks 
+#include <queue>
+
+struct Entry {
+    int value;
+    int fileIndex;
+
+    bool operator>(const Entry& other) const {
+        return value > other.value;
+    }
+};
+
+void mergeChunks(const std::vector<std::string>& chunkFiles, const std::string& outputFile) {
+    std::vector<std::ifstream> inputs(chunkFiles.size());
+    std::priority_queue<Entry, std::vector<Entry>, std::greater<Entry>> minHeap;
+
+    // Open all chunk files
+    for (int i = 0; i < chunkFiles.size(); ++i) {
+        inputs[i].open(chunkFiles[i]);
+        int num;
+        if (inputs[i] >> num) {
+            minHeap.push({num, i});
+        }
+    }
+
+    std::ofstream out(outputFile);
+    while (!minHeap.empty()) {
+        Entry smallest = minHeap.top(); minHeap.pop();
+        out << smallest.value << "\n";
+
+        int nextVal;
+        if (inputs[smallest.fileIndex] >> nextVal) {
+            minHeap.push({nextVal, smallest.fileIndex});
+        }
+    }
+
+    for (auto& f : inputs) f.close();
+}
+
+//Main 
+int main() {
+    std::vector<std::string> chunkFiles;
+    splitAndSortChunks("numbers.txt", chunkFiles);
+    mergeChunks(chunkFiles, "sorted.txt");
+    return 0;
+}

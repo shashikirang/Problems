@@ -1,0 +1,106 @@
+Given a stream of integers and a window size k, implement a class that efficiently computes the moving average of the last k integers.
+
+
+#include <queue>
+
+class MovingAverage {
+private:
+    int windowSize;
+    std::queue<int> window;
+    double sum;
+
+public:
+    explicit MovingAverage(int k) : windowSize(k), sum(0) {}
+
+    double next(int val) {
+        window.push(val);
+        sum += val;
+
+        if (window.size() > windowSize) {
+            sum -= window.front();
+            window.pop();
+        }
+
+        return sum / window.size();
+    }
+};
+
+
+#include <iostream>
+
+int main() {
+    MovingAverage ma(3);  // Window size = 3
+
+    std::cout << ma.next(1) << std::endl;  // 1.0
+    std::cout << ma.next(10) << std::endl; // (1+10)/2 = 5.5
+    std::cout << ma.next(3) << std::endl;  // (1+10+3)/3 = 4.67
+    std::cout << ma.next(5) << std::endl;  // (10+3+5)/3 = 6.0
+}
+
+
+Time per insertion: O(1)
+
+Space complexity: O(k)
+
+============================================================================
+Multi Threaded access 
+----------------------- 
+#include <queue>
+#include <mutex>
+#include <shared_mutex>
+
+class ThreadSafeMovingAverage {
+private:
+    std::queue<int> window_;
+    size_t windowSize_;
+    double sum_;
+    mutable std::shared_mutex mutex_;  // Allows shared reads, exclusive writes
+
+public:
+    explicit ThreadSafeMovingAverage(size_t k)
+        : windowSize_(k), sum_(0) {}
+
+    double next(int val) {
+        std::unique_lock lock(mutex_);
+
+        window_.push(val);
+        sum_ += val;
+
+        if (window_.size() > windowSize_) {
+            sum_ -= window_.front();
+            window_.pop();
+        }
+
+        return sum_ / window_.size();
+    }
+
+    double getCurrentAverage() const {
+        std::shared_lock lock(mutex_);
+        return window_.empty() ? 0.0 : sum_ / window_.size();
+    }
+
+    size_t currentSize() const {
+        std::shared_lock lock(mutex_);
+        return window_.size();
+    }
+};
+
+#include <iostream>
+#include <thread>
+#include <vector>
+
+int main() {
+    ThreadSafeMovingAverage ma(3);
+
+    std::vector<std::thread> threads;
+    for (int i = 1; i <= 5; ++i) {
+        threads.emplace_back([&ma, i]() {
+            double avg = ma.next(i);
+            std::cout << "Thread " << i << " added " << i << ", avg = " << avg << "\n";
+        });
+    }
+
+    for (auto& t : threads) t.join();
+
+    std::cout << "Final average: " << ma.getCurrentAverage() << "\n";
+}
